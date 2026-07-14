@@ -1,146 +1,88 @@
 # Automated Hybrid SOC Incident Detection and Response Platform
 
-> **Wazuh Alert → Shuffle Webhook → TheHive Alert → Promote to Case → Cortex Analysis → Investigation and Response**
+> **Wazuh → Shuffle → TheHive → Cortex → Investigation and Response**
 
-[![Status](https://img.shields.io/badge/status-portfolio--ready-success)]()
-[![Security](https://img.shields.io/badge/focus-cybersecurity-blue)]()
-[![Author](https://img.shields.io/badge/author-Stewart%20Nyamutswa-lightgrey)]()
+[![Status](https://img.shields.io/badge/Status-Completed-brightgreen)]() [![Type](https://img.shields.io/badge/Type-Cybersecurity%20Case%20Study-blue)]()
 
 ## Video Demonstration
 
-🎥 **Project Video:** [Add video link here](VIDEO_LINK_HERE)
+🎥 **Watch the project walkthrough:** [Add video link here](VIDEO_LINK_HERE)
 
-## Project Overview
+---
 
+## Why I Built This
 
-This project implements a hybrid Security Operations Center environment that connects AWS-hosted security platforms with a VirtualBox attack lab. Windows and Ubuntu endpoints generate security telemetry, Kali Linux simulates controlled attacks, Wazuh detects suspicious activity, Shuffle automates alert forwarding, TheHive manages alerts and cases, and Cortex enriches observables with threat intelligence.
+I built this project to understand what happens after a security tool generates an alert. A real SOC does not stop at detection. Alerts must be forwarded, organized, enriched, investigated, and closed with documented response actions. This project connects those stages into one workflow using Wazuh, Shuffle, TheHive, and Cortex.
 
+## The Problem
 
-## Business Problem
-
-
-Security teams frequently face high alert volumes, manual case creation, inconsistent investigations, and delayed response. This project reduces repetitive analyst work by automating the transition from detection to structured incident handling.
-
+Security analysts often spend too much time copying alert details between tools, creating cases manually, and gathering context before an investigation can begin. The goal was to reduce that manual work while keeping the analyst involved in the decisions that matter.
 
 ## Architecture
 
-
 ```text
-VirtualBox Lab                          AWS / Cloud Security Stack
-
-Kali Linux ──attacks──► Windows ─┐
-                                 ├──► Wazuh Agent ─► Wazuh SIEM
-Kali Linux ──attacks──► Ubuntu ──┘                       │
-                                                        ▼
-                                                 Shuffle Webhook
-                                                        │
-                                                        ▼
-                                                  TheHive Alert
-                                                        │
-                                               Promote Alert to Case
-                                                        │
-                                                        ▼
-                                                Cortex Analyzer
-                                                        │
-                                                        ▼
-                                           Investigation + Response
+Kali Linux → Windows / Ubuntu → Wazuh → Shuffle Webhook → TheHive Alert → Promote to Case → Cortex → Investigation and Response
 ```
 
+## How the Project Works
 
-> Add the final architecture diagram to `architecture/architecture-diagram.png`.
+I simulated SSH brute-force activity and privilege escalation from Kali Linux against Ubuntu. Wazuh detected the authentication activity, Shuffle mapped the alert into TheHive, and the analyst promoted the alert into an investigation case. Cortex analyzers were then run against available observables and the final case included the original alert, workflow evidence, timeline, and response actions.
 
-## Workflow
+## Key Capabilities
 
-
-1. Kali Linux generates a controlled attack against Windows or Ubuntu.
-2. The endpoint Wazuh agent forwards telemetry to the AWS-hosted Wazuh manager.
-3. Wazuh generates an alert based on detection rules.
-4. Shuffle receives the alert through a webhook.
-5. Shuffle creates a structured alert in TheHive.
-6. The analyst promotes a confirmed alert into an investigation case.
-7. Cortex analyzes available observables such as IP addresses, domains, URLs, or hashes.
-8. The analyst documents findings and performs containment, remediation, and recovery.
-
-
-## Key Features
-
-
-- Centralized Windows and Linux endpoint monitoring
-- Automated alert forwarding with Shuffle
-- TheHive alert and case management
-- Cortex observable enrichment
-- Controlled attack simulation
-- MITRE ATT&CK mapping
-- Incident timelines and response documentation
-- MTTD and MTTR measurement
-
-
-## Attack or Test Scenarios
-
-
-- SSH brute-force attack
-- Unauthorized authentication attempts
-- Suspicious PowerShell activity
-- Windows account manipulation
-- Privilege escalation
-- Credential compromise
-- Lateral movement
-
-
-## Technologies
-
-See [`TECHNOLOGIES.md`](./TECHNOLOGIES.md).
-
-## Screenshots
-
-Store screenshots in [`screenshots/`](./screenshots/).
-
-Recommended evidence:
-
-1. Architecture diagram
-2. Environment or service overview
-3. Attack or test execution
-4. Detection or finding
-5. Automation workflow
-6. Investigation or analysis
-7. Response or remediation
-8. Final result
+- Windows and Linux monitoring with Wazuh
+- Webhook automation with Shuffle
+- Automatic TheHive alert creation
+- Alert-to-case promotion
+- Cortex observable analysis
+- Incident timeline reconstruction
+- Structured response documentation
 
 ## Results
 
-Document measurable results here:
-
-- Alerts generated:
-- Cases created:
-- Findings investigated:
-- Mean Time to Detect:
-- Mean Time to Respond:
-- False positives:
-- Successful remediations:
-- Verification results:
+The workflow moved a security event from detection to investigation without requiring the analyst to rebuild the case manually in every tool. I also documented a real limitation: private NAT addresses do not produce useful public reputation results in threat-intelligence services.
 
 ## Skills Demonstrated
 
+Wazuh, Shuffle, TheHive, Cortex, AWS EC2, VirtualBox, Linux authentication logs, incident response, SOAR, case management, MITRE ATT&CK.
 
-SIEM, SOAR, incident response, alert triage, threat intelligence, Wazuh, Shuffle, TheHive, Cortex, AWS, Windows logging, Linux logging, VirtualBox, MITRE ATT&CK.
+## Project Gallery
 
+<img src="./assets/image-01.png" alt="Project screenshot" width="850">
 
-## Security and Privacy
+<img src="./assets/image-02.png" alt="Project screenshot" width="850">
 
-- No production credentials are included.
-- API keys and passwords must be stored in environment variables or secret managers.
-- Public screenshots must be reviewed for sensitive information.
-- Private IP addresses may be anonymized where necessary.
-- Attack simulations must only be performed in authorized lab environments.
+<img src="./assets/image-03.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-04.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-05.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-06.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-07.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-08.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-09.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-10.png" alt="Project screenshot" width="850">
+
+<img src="./assets/image-11.png" alt="Project screenshot" width="850">
+
+## What I Learned
+
+This project strengthened my ability to connect technical controls to a real security workflow. It also reinforced the importance of testing integrations end to end, documenting limitations honestly, and designing automation that supports analysts rather than hiding important decisions.
 
 ## Future Improvements
 
-- Add more attack or test scenarios.
-- Improve detection and correlation logic.
-- Add automated notifications.
-- Add additional threat-intelligence sources.
-- Add metrics and trend dashboards.
-- Expand documentation with incident reports and lessons learned.
+- Add more automated test coverage
+- Improve dashboards and reporting
+- Expand detection or risk logic
+- Strengthen secrets management
+- Add scheduled execution and notifications
+
+---
 
 ## Author
 

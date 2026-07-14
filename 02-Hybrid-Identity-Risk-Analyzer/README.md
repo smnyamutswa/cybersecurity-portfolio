@@ -1,137 +1,70 @@
-# Hybrid Identity Risk Analyzer
+# Hybrid Identity Risk Analyzer with Agentic AI
 
-> **Active Directory + AWS IAM + Agentic AI Risk Analysis**
+> **Active Directory + AWS IAM + AI Investigation and Remediation**
 
-[![Status](https://img.shields.io/badge/status-portfolio--ready-success)]()
-[![Security](https://img.shields.io/badge/focus-cybersecurity-blue)]()
-[![Author](https://img.shields.io/badge/author-Stewart%20Nyamutswa-lightgrey)]()
+[![Status](https://img.shields.io/badge/Status-Completed-brightgreen)]() [![Type](https://img.shields.io/badge/Type-Cybersecurity%20Case%20Study-blue)]()
 
 ## Video Demonstration
 
-🎥 **Project Video:** [Add video link here](VIDEO_LINK_HERE)
+🎥 **Watch the project walkthrough:** [Add video link here](VIDEO_LINK_HERE)
 
-## Project Overview
+---
 
+## Why I Built This
 
-This project evaluates identity risk across on-premises Active Directory and AWS IAM. Python-based agents collect human and non-human identity data, correlate permissions and privilege relationships, calculate risk scores, and produce AI-generated investigation and remediation reports through a Streamlit dashboard.
+Identity is one of the most important attack surfaces in a modern organization. I built this platform to bring Active Directory and AWS IAM into one identity-risk workflow. The system discovers human and non-human identities, evaluates risky configurations, assigns severity, and generates AI-assisted investigation and remediation reports.
 
+## The Problem
 
-## Business Problem
-
-
-Organizations often lack a unified view of identity risk across Active Directory and cloud IAM. Excessive permissions, stale accounts, password-policy weaknesses, and long-lived access keys can create privilege-escalation paths that remain unnoticed.
-
+Active Directory and AWS IAM are often reviewed separately, creating blind spots around privileged accounts, non-expiring passwords, long-lived access keys, excessive permissions, and unmanaged service identities.
 
 ## Architecture
 
-
 ```text
-Active Directory ─► Human Identity Agent ─┐
-                                         ├─► Correlation Agent
-AWS IAM ─────────► Non-Human Agent ───────┘
-                                                  │
-                                                  ▼
-                                            Risk Scoring Agent
-                                                  │
-                                                  ▼
-                                         AI Investigation Engine
-                                                  │
-                                                  ▼
-                                      Streamlit Dashboard + Reports
+Active Directory → Human Identity Agent → Human Risk Agent
+AWS IAM → Non-Human Identity Agent → NHI Risk Agent
+Both → GPT Investigation Agent → GPT Remediation Agent → Streamlit Dashboard
 ```
 
+## How the Project Works
 
-> Add the final architecture diagram to `architecture/architecture-diagram.png`.
+The Human Identity Agent uses LDAP to collect users, service accounts, privileged group membership, account status, and password attributes. The Non-Human Identity Agent uses boto3 to enumerate IAM users, roles, policies, and access keys. Risk engines score findings, and AI agents generate investigation context and remediation guidance displayed in Streamlit.
 
-## Workflow
+## Key Capabilities
 
-
-1. Collect Active Directory users, groups, status, and password attributes.
-2. Enumerate AWS IAM users, roles, policies, and access keys.
-3. Normalize and correlate identities.
-4. Calculate risk based on privilege, account age, policy exposure, and credential hygiene.
-5. Generate investigation context and remediation recommendations.
-6. Present findings through a centralized dashboard.
-
-
-## Key Features
-
-
-- Hybrid identity inventory
-- Privilege and excessive-permission detection
-- Stale and risky account detection
-- Human and non-human identity correlation
-- Risk scoring and severity classification
-- AI-generated investigation summaries
-- AI-generated remediation guidance
-- Streamlit visualization
-
-
-## Attack or Test Scenarios
-
-
-- Privileged AD accounts with passwords that never expire
-- Excessive AWS AdministratorAccess
-- Long-lived IAM users and access keys
-- Disabled or stale accounts
-- Service-account risk
-- Cross-environment identity exposure
-
-
-## Technologies
-
-See [`TECHNOLOGIES.md`](./TECHNOLOGIES.md).
-
-## Screenshots
-
-Store screenshots in [`screenshots/`](./screenshots/).
-
-Recommended evidence:
-
-1. Architecture diagram
-2. Environment or service overview
-3. Attack or test execution
-4. Detection or finding
-5. Automation workflow
-6. Investigation or analysis
-7. Response or remediation
-8. Final result
+- Active Directory identity discovery
+- AWS IAM analysis
+- Human and non-human risk scoring
+- Privileged-account detection
+- AI investigation reports
+- AI remediation guidance
+- Streamlit dashboard
 
 ## Results
 
-Document measurable results here:
-
-- Alerts generated:
-- Cases created:
-- Findings investigated:
-- Mean Time to Detect:
-- Mean Time to Respond:
-- False positives:
-- Successful remediations:
-- Verification results:
+The platform identified high-risk identities such as privileged AD accounts with non-expiring passwords and AWS IAM users with AdministratorAccess. It explained why each condition mattered, possible attack paths, business impact, and recommended remediation.
 
 ## Skills Demonstrated
 
+Active Directory, AWS IAM, Python, ldap3, boto3, Streamlit, OpenAI, identity security, least privilege, risk scoring, agentic AI.
 
-Active Directory, AWS IAM, identity security, Python, LDAP, boto3, Streamlit, OpenAI API, risk scoring, security automation, least privilege.
+## Project Gallery
 
+<img src="./assets/image-01.png" alt="Project screenshot" width="850">
 
-## Security and Privacy
+## What I Learned
 
-- No production credentials are included.
-- API keys and passwords must be stored in environment variables or secret managers.
-- Public screenshots must be reviewed for sensitive information.
-- Private IP addresses may be anonymized where necessary.
-- Attack simulations must only be performed in authorized lab environments.
+This project strengthened my ability to connect technical controls to a real security workflow. It also reinforced the importance of testing integrations end to end, documenting limitations honestly, and designing automation that supports analysts rather than hiding important decisions.
 
 ## Future Improvements
 
-- Add more attack or test scenarios.
-- Improve detection and correlation logic.
-- Add automated notifications.
-- Add additional threat-intelligence sources.
-- Add metrics and trend dashboards.
-- Expand documentation with incident reports and lessons learned.
+- Add more automated test coverage
+- Improve dashboards and reporting
+- Expand detection or risk logic
+- Strengthen secrets management
+- Add scheduled execution and notifications
+
+---
 
 ## Author
 
