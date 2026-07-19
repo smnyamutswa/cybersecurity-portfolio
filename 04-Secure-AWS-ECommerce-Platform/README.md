@@ -143,19 +143,61 @@ Building the environment taught me AWS services. Troubleshooting the full reques
 
 ## Project Gallery
 
-All screenshots and diagrams are stored in the [`assets`](./assets/) folder.
+<p align="center">
+  <a href="./assets/image-01.png">
+    <img src="./assets/image-01.png" alt="Image 01" width="380">
+  </a>
 
-Suggested viewing order:
+  <a href="./assets/image-02.png">
+    <img src="./assets/image-02.png" alt="Image 02" width="380">
+  </a>
 
-1. Architecture diagram
-2. CloudFormation stacks
-3. VPC and subnet layout
-4. Healthy load-balancer targets
-5. Running application
-6. RDS and S3 integration
-7. WAF testing
-8. Monitoring and security findings
+  <a href="./assets/image-03.png">
+    <img src="./assets/image-03.png" alt="Image 03" width="380">
+  </a>
 
+  <a href="./assets/image-04.png">
+    <img src="./assets/image-04.png" alt="Image 04" width="380">
+  </a>
+
+  <a href="./assets/image-05.png">
+    <img src="./assets/image-05.png" alt="Image 05" width="380">
+  </a>
+
+  <a href="./assets/image-06.png">
+    <img src="./assets/image-06.png" alt="Image 06" width="380">
+  </a>
+
+  <a href="./assets/image-07.png">
+    <img src="./assets/image-07.png" alt="Image 07" width="380">
+  </a>
+
+  <a href="./assets/image-08.png">
+    <img src="./assets/image-08.png" alt="Image 08" width="380">
+  </a>
+
+  <a href="./assets/image-09.png">
+    <img src="./assets/image-09.png" alt="Image 09" width="380">
+  </a>
+
+  <a href="./assets/image-10.png">
+    <img src="./assets/image-10.png" alt="Image 10" width="380">
+  </a>
+
+  <a href="./assets/image-11.png">
+    <img src="./assets/image-11.png" alt="Image 11" width="380">
+  </a>
+
+  <a href="./assets/image-12.png">
+    <img src="./assets/image-12.png" alt="Image 12" width="380">
+  </a>
+
+  <a href="./assets/image-13.png">
+    <img src="./assets/image-13.png" alt="Image 13" width="380">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
 ## Video Demonstration
 
 Add the project demonstration link here.

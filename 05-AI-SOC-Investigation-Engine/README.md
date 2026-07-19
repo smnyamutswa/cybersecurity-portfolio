@@ -144,19 +144,9 @@ The final report was only as good as the detection, event fields, and enrichment
 
 ## Project Gallery
 
-All screenshots and diagrams are stored in the [`assets`](./assets/) folder.
+Screenshots and architecture diagrams will be added to the [`assets`](./assets/) folder.
 
-Suggested viewing order:
-
-1. Architecture diagram
-2. Splunk detection
-3. Raw attack telemetry
-4. Enrichment output
-5. AI investigation report
-6. Risk score
-7. ServiceNow incident
-8. Final workflow evidence
-
+<p align="center"><em>Images will be displayed here as medium-size, clickable previews.</em></p>
 ## Video Demonstration
 
 Add the project demonstration link here.

@@ -133,18 +133,13 @@ I also learned that AI is most useful after reliable data collection and rule-ba
 
 ## Project Gallery
 
-All screenshots and diagrams are stored in the [`assets`](./assets/) folder.
+<p align="center">
+  <a href="./assets/image-01.png">
+    <img src="./assets/image-01.png" alt="Image 01" width="380">
+  </a>
+</p>
 
-Suggested viewing order:
-
-1. Architecture diagram
-2. Active Directory environment
-3. AWS IAM identities
-4. Agent execution
-5. Risk findings
-6. AI investigation report
-7. Streamlit dashboard
-
+<p align="center"><em>Click any image to open the full-size version.</em></p>
 ## Video Demonstration
 
 Add the project demonstration link here.
