@@ -11,6 +11,8 @@ The lab connects Wazuh, Shuffle, TheHive, and Cortex into one working SOC pipeli
 
 The goal was not simply to make tools talk to each other. I wanted to recreate the way a real analyst receives an alert, validates it, gathers evidence, documents the investigation, and decides what happens next.
 
+
+
 ## Why I Built This
 
 A lot of beginner SOC projects end when an alert appears on a dashboard. In a real environment, that is only the beginning.
@@ -69,6 +71,14 @@ SOC analyst investigation and response
 I broke the workflow into separate SOC functions: detection, automation, case management, enrichment, and analyst response.
 
 The local VirtualBox machines generated the activity, while the central security platforms ran in AWS. This gave me a hybrid environment that was closer to how many real organizations operate.
+
+<p align="center">
+  <a href="./assets/image-02.png">
+    <img src="./assets/image-02.png" alt="Image 02" width="380">
+  </a>
+</p>
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
 
 ### Step 2 — Build
 
