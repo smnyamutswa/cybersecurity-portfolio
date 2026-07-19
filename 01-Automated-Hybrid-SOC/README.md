@@ -74,35 +74,90 @@ The local VirtualBox machines generated the activity, while the central security
 
 <p align="center">
   <a href="./assets/image-02.png">
-    <img src="./assets/image-02.png" alt="Image 02" width="380">
+    <img src="./assets/image-02.png" alt="Image 02" width="480">
   </a>
 </p>
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>architecture</em></p>
 
 
 ### Step 2 — Build
 
-I installed Wazuh agents on the monitored systems and connected them to the Wazuh manager. I then created a Shuffle workflow that received Wazuh alerts and mapped the important fields into the format expected by TheHive.
+I installed Wazuh agents on the monitored systems and connected them to the Wazuh manager.
+
+<p align="center">
+  <a href="./assets/image-12.png">
+    <img src="./assets/image-12.png" alt="Image 02" width="480">
+  </a>
+</p>
+<p align="center"><em>Dash of connected workstations.</em></p>
+
+I then created a Shuffle workflow that received Wazuh alerts and mapped the important fields into the format expected by TheHive.
+
+<p align="center">
+  <a href="./assets/image-08.png">
+    <img src="./assets/image-08.png" alt="Image 08" width="480">
+  </a>
+</p>
+<p align="center"><em>Shuffle workflow.</em></p>
 
 After that, I connected Cortex so that hashes, public IP addresses, and other supported observables could be analyzed from inside the investigation workflow.
+<p align="center">
+  <a href="./assets/image-13.png">
+    <img src="./assets/image-13.png" alt="Image 02" width="480">
+  </a>
+</p>
+<p align="center"><em>CORTEX ANALYZERS.</em></p>
 
 ### Step 3 — Secure
 
 I kept API keys and credentials out of the public repository and restricted network access to the ports required by each service.
 
 All attack activity was performed only against systems inside my own lab. I also kept a human-review step before an alert became a formal case.
+<p align="center">
+  <a href="./assets/image-14.png">
+    <img src="./assets/image-14.png" alt="Image 02" width="480">
+  </a>
+</p>
+<p align="center"><em>Virtual environment</em></p>
 
 ### Step 4 — Test
 
-I generated several controlled events, including failed SSH logins, successful SSH access, file-integrity changes, Windows authentication activity, and privilege-related events.
+I generated several controlled events, including failed SSH logins, successful SSH access and privilege-related events.
 
 For each scenario, I checked the event at every stage instead of assuming the complete pipeline worked.
+<p align="center">
+  <a href="./assets/image-06.png">
+    <img src="./assets/image-06.png" alt="Image 02" width="480">
+  </a>
+</p>
+<p align="center"><em>Failed SSH logins</em></p>
+<p align="center">
+  <a href="./assets/image-07.png">
+    <img src="./assets/image-07.png" alt="Image 02" width="480">
+  </a>
+</p>
+<p align="center"><em>privilege-related events</em></p>
 
 ### Step 5 — Validate
 
 I confirmed that Wazuh detected the event, Shuffle received the payload, TheHive created a readable alert, and Cortex returned results for supported observables.
 
-I then promoted selected alerts into cases and documented the investigation, containment, and remediation steps.
+<p align="center">
+  <a href="./assets/image-15.png">
+    <img src="./assets/image-15.png" alt="Image 02" width="480">
+  </a>
+</p>
+<p align="center"><em>Alert Creation</em></p>
+
+I then promoted selected alerts into cases and documented the investigation steps.
+
+<p align="center">
+  <a href="./assets/image-10.png">
+    <img src="./assets/image-10.png" alt="Image 02" width="480">
+  </a>
+</p>
+<p align="center"><em>Alert Analysis after runningcortex analyzers</em></p>
+
 
 ## Challenges & Troubleshooting
 
@@ -134,54 +189,6 @@ The biggest lesson was that a SOC is a process, not a dashboard.
 Detection tells the analyst that something happened. The real value comes from validating the alert, adding context, documenting the evidence, and making a defensible response decision.
 
 ## Project Gallery
-
-<p align="center">
-  <a href="./assets/image-01.png">
-    <img src="./assets/image-01.png" alt="Image 01" width="380">
-  </a>
-
-  <a href="./assets/image-02.png">
-    <img src="./assets/image-02.png" alt="Image 02" width="380">
-  </a>
-
-  <a href="./assets/image-03.png">
-    <img src="./assets/image-03.png" alt="Image 03" width="380">
-  </a>
-
-  <a href="./assets/image-04.png">
-    <img src="./assets/image-04.png" alt="Image 04" width="380">
-  </a>
-
-  <a href="./assets/image-05.png">
-    <img src="./assets/image-05.png" alt="Image 05" width="380">
-  </a>
-
-  <a href="./assets/image-06.png">
-    <img src="./assets/image-06.png" alt="Image 06" width="380">
-  </a>
-
-  <a href="./assets/image-07.png">
-    <img src="./assets/image-07.png" alt="Image 07" width="380">
-  </a>
-
-  <a href="./assets/image-08.png">
-    <img src="./assets/image-08.png" alt="Image 08" width="380">
-  </a>
-
-  <a href="./assets/image-09.png">
-    <img src="./assets/image-09.png" alt="Image 09" width="380">
-  </a>
-
-  <a href="./assets/image-10.png">
-    <img src="./assets/image-10.png" alt="Image 10" width="380">
-  </a>
-
-  <a href="./assets/image-11.png">
-    <img src="./assets/image-11.png" alt="Image 11" width="380">
-  </a>
-</p>
-
-<p align="center"><em>Click any image to open the full-size version.</em></p>
 ## Video Demonstration
 
 Add the project demonstration link here.
