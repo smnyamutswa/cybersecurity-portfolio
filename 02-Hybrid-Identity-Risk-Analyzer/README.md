@@ -1,6 +1,5 @@
 # Hybrid Identity Risk Analyzer with Agentic AI
-
-> **Professional Banner**  
+ 
 > **One view of identity risk across Active Directory and AWS IAM**
 
 ## Project Summary
@@ -67,6 +66,14 @@ I separated the platform into focused components. One agent collected Active Dir
 
 This made the system easier to test and helped prevent AI from becoming responsible for the actual risk decision.
 
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
 ### Step 2 — Build
 
 I created a Windows Server Active Directory lab with users, groups, privileged accounts, and intentionally risky settings.
@@ -74,6 +81,21 @@ I created a Windows Server Active Directory lab with users, groups, privileged a
 A read-only account collected users and group membership through LDAP. The AWS component used boto3 to enumerate IAM users, roles, policies, access keys, and administrative permissions.
 
 I then normalized both data sources into a common format.
+<p align="center">
+  <a href="./assets/image-07.png">
+    <img src="./assets/image-07.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>ACTIVE DIRECTORY IAM</em></p>
+
+<p align="center">
+  <a href="./assets/image-06.png">
+    <img src="./assets/image-06.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>AWS IAM</em></p>
 
 ### Step 3 — Secure
 
@@ -93,12 +115,35 @@ I created test conditions such as:
 - Weak service-account configurations
 
 I tested each component separately before running the complete scan.
+<p align="center">
+  <a href="./assets/image-01.png">
+    <img src="./assets/image-01.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Complete Scan.</em></p>
 
 ### Step 5 — Validate
 
 I checked that every finding included the identity, score, severity, reasons, and recommended action.
 
+<p align="center">
+  <a href="./assets/image-05.png">
+    <img src="./assets/image-05.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Scan Findings.</em></p>
+
 I also reviewed the AI reports to confirm they were based on the actual risk data rather than making unsupported assumptions.
+
+<p align="center">
+  <a href="./assets/image-02.png">
+    <img src="./assets/image-02.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>AI REPORTS.</em></p>
 
 ## Challenges & Troubleshooting
 
@@ -131,15 +176,7 @@ A disabled account is not equal to an active administrator with a non-expiring p
 
 I also learned that AI is most useful after reliable data collection and rule-based analysis are already in place.
 
-## Project Gallery
 
-<p align="center">
-  <a href="./assets/image-01.png">
-    <img src="./assets/image-01.png" alt="Image 01" width="380">
-  </a>
-</p>
-
-<p align="center"><em>Click any image to open the full-size version.</em></p>
 ## Video Demonstration
 
 Add the project demonstration link here.
