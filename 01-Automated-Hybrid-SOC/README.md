@@ -1,6 +1,5 @@
 # Automated Hybrid SOC Incident Detection and Response Platform
-
-> **Professional Banner**  
+ 
 > **From raw security event to structured investigation and response**
 
 ## Project Summary
@@ -15,9 +14,9 @@ The goal was not simply to make tools talk to each other. I wanted to recreate t
 
 ## Why I Built This
 
-A lot of beginner SOC projects end when an alert appears on a dashboard. In a real environment, that is only the beginning.
+Security alerts alone provide limited value without context. The real challenge is transforming raw detections into actionable investigations.
 
-An analyst still needs to understand the event, decide whether it matters, collect supporting evidence, assign severity, document actions, and close the case properly. I built this platform to practice that full workflow instead of focusing on detection alone.
+I built this project to automate the journey from alert generation to analyst-ready cases, combining detection, enrichment, case management, and investigation workflows to reflect how modern SOC teams operate.
 
 ## Technologies Used
 
