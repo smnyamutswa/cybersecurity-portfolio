@@ -1,25 +1,21 @@
 # Automated Hybrid SOC Incident Detection and Response Platform
 
 > **Professional Banner**  
-> **Detect → Automate → Investigate → Enrich → Respond**
-
----
+> **From raw security event to structured investigation and response**
 
 ## Project Summary
 
-This project demonstrates a complete hybrid SOC workflow built across AWS and a local VirtualBox lab. Wazuh collects security telemetry from Windows and Linux endpoints, Shuffle automates alert delivery, TheHive manages investigations, and Cortex enriches supported observables.
+I built this project to understand what really happens after a security alert is generated.
 
-The platform was designed to show what happens after a security event is detected. Instead of stopping at a SIEM alert, the workflow moves the event into a structured case where an analyst can review evidence, document findings, perform response actions, and close the incident.
+The lab connects Wazuh, Shuffle, TheHive, and Cortex into one working SOC pipeline. Wazuh detects activity on Windows and Linux systems, Shuffle moves and transforms the alert, TheHive turns it into an investigation case, and Cortex adds context to supported observables.
 
----
+The goal was not simply to make tools talk to each other. I wanted to recreate the way a real analyst receives an alert, validates it, gathers evidence, documents the investigation, and decides what happens next.
 
 ## Why I Built This
 
-Many SOC labs focus only on generating alerts. I wanted to understand the full incident lifecycle: how an alert is detected, transferred between platforms, enriched, investigated, and converted into an actionable case.
+A lot of beginner SOC projects end when an alert appears on a dashboard. In a real environment, that is only the beginning.
 
-The project also gave me practical experience integrating tools that represent different SOC functions rather than treating one product as the entire security operation.
-
----
+An analyst still needs to understand the event, decide whether it matters, collect supporting evidence, assign severity, document actions, and close the case properly. I built this platform to practice that full workflow instead of focusing on detection alone.
 
 ## Technologies Used
 
@@ -32,136 +28,115 @@ The project also gave me practical experience integrating tools that represent d
 - Windows
 - Kali Linux
 - VirtualBox
-- Webhooks and REST APIs
+- REST APIs and webhooks
 - JSON
 - MITRE ATT&CK
-
----
 
 ## Architecture
 
 ```text
 Kali Linux
     │
-    │ Controlled Attack
+    │ Controlled attack activity
     ▼
-Windows / Ubuntu Endpoints
+Windows and Ubuntu endpoints
     │
-    │ Security Telemetry
+    │ Security logs and telemetry
     ▼
 Wazuh Manager
     │
-    │ Webhook Alert
+    │ Alert webhook
     ▼
 Shuffle SOAR
     │
-    │ Structured Alert
+    │ Normalized alert
     ▼
 TheHive
     │
-    │ Case + Observables
+    │ Case and observables
     ▼
 Cortex
     │
-    │ Enrichment Results
+    │ Enrichment results
     ▼
-SOC Analyst Investigation and Response
+SOC analyst investigation and response
 ```
-
-The local VirtualBox environment generated attack activity, while AWS-hosted security platforms collected, processed, and organized the resulting evidence.
-
----
 
 ## Engineering Journey
 
 ### Step 1 — Design
 
-I designed the lab as a hybrid SOC environment. Kali Linux acted as the attacker, Windows and Ubuntu systems acted as monitored endpoints, and AWS hosted the central security platforms.
+I broke the workflow into separate SOC functions: detection, automation, case management, enrichment, and analyst response.
 
-The workflow was designed around five functions: endpoint visibility, detection, automation, case management, and enrichment.
+The local VirtualBox machines generated the activity, while the central security platforms ran in AWS. This gave me a hybrid environment that was closer to how many real organizations operate.
 
 ### Step 2 — Build
 
-I deployed Wazuh agents to the monitored systems and connected them to the Wazuh manager. I then configured Shuffle to receive Wazuh alerts through a webhook and map the important JSON fields into TheHive.
+I installed Wazuh agents on the monitored systems and connected them to the Wazuh manager. I then created a Shuffle workflow that received Wazuh alerts and mapped the important fields into the format expected by TheHive.
 
-TheHive was configured for alert and case management, while Cortex was connected for observable analysis.
+After that, I connected Cortex so that hashes, public IP addresses, and other supported observables could be analyzed from inside the investigation workflow.
 
 ### Step 3 — Secure
 
-Credentials and API keys were kept outside public documentation. Access between services was restricted to the required ports, and attack simulations were performed only inside the authorized lab.
+I kept API keys and credentials out of the public repository and restricted network access to the ports required by each service.
 
-A human-review step remained in place before promoting alerts into investigation cases.
+All attack activity was performed only against systems inside my own lab. I also kept a human-review step before an alert became a formal case.
 
 ### Step 4 — Test
 
-I generated controlled security events, including SSH authentication failures, successful SSH access, file-integrity changes, suspicious Windows authentication activity, and privilege-related events.
+I generated several controlled events, including failed SSH logins, successful SSH access, file-integrity changes, Windows authentication activity, and privilege-related events.
 
-I verified that Wazuh detected the events, Shuffle received the payloads, and TheHive created structured alerts.
+For each scenario, I checked the event at every stage instead of assuming the complete pipeline worked.
 
 ### Step 5 — Validate
 
-I validated the complete flow by promoting confirmed alerts into TheHive cases, reviewing the event timeline, extracting observables, running supported Cortex analyzers, and documenting containment and remediation actions.
+I confirmed that Wazuh detected the event, Shuffle received the payload, TheHive created a readable alert, and Cortex returned results for supported observables.
 
----
+I then promoted selected alerts into cases and documented the investigation, containment, and remediation steps.
 
 ## Challenges & Troubleshooting
 
-### Invalid JSON Sent to TheHive
+### TheHive rejected the alert payload
 
-TheHive initially rejected some Shuffle requests because required fields were missing or incorrectly formatted. I corrected the JSON mapping and ensured fields such as `sourceRef` were unique.
+My first Shuffle requests returned an `Invalid JSON` error. The problem was not the alert itself; it was the structure of the request body. I corrected the required fields, data types, and unique `sourceRef` value.
 
-### Service Dependencies
+### The services depended on each other
 
-TheHive and Cortex required supporting database and search services. I troubleshot storage usage, container health, hostnames, and startup order before the environment became stable.
+TheHive and Cortex relied on supporting database and search services. Storage pressure, container health, hostname resolution, and startup order all caused failures at different points.
 
-### Private-IP Enrichment
+### Private IP addresses produced little enrichment
 
-Public reputation services could not provide useful intelligence for private VirtualBox addresses. This taught me to distinguish between a broken analyzer and a successful analyzer with no meaningful public data.
-
----
+Public reputation tools cannot provide useful intelligence about private lab addresses. I learned that an empty result does not automatically mean an analyzer is broken.
 
 ## Results
 
-- Windows and Linux security events were centralized in Wazuh.
-- Wazuh alerts were forwarded automatically through Shuffle.
-- TheHive alerts were created with structured fields and context.
-- Confirmed alerts were promoted into investigation cases.
-- Supported observables were analyzed through Cortex.
-- Incident timelines and analyst actions were documented.
-- Repetitive manual alert transfer was reduced.
-
----
+- Centralized Windows and Linux security events in Wazuh
+- Forwarded selected alerts automatically through Shuffle
+- Created structured alerts and cases in TheHive
+- Analyzed supported observables with Cortex
+- Documented investigation timelines and response actions
+- Reduced manual copying between security platforms
 
 ## Lessons Learned
 
-The main lesson was that a SOC is a workflow, not a single tool. Detection, automation, investigation, enrichment, and response each serve a different purpose.
+The biggest lesson was that a SOC is a process, not a dashboard.
 
-Automation improved speed and consistency, but analyst judgment remained necessary for validation, containment, remediation, and closure.
-
----
+Detection tells the analyst that something happened. The real value comes from validating the alert, adding context, documenting the evidence, and making a defensible response decision.
 
 ## Project Gallery
 
-Use the strongest images from the project asset folder in this order:
+All screenshots and diagrams are stored in the [`assets`](./assets/) folder.
+
+Suggested viewing order:
 
 1. Architecture diagram
-2. Wazuh alert
+2. Wazuh detection
 3. Shuffle workflow
 4. TheHive alert
-5. Promoted investigation case
+5. Investigation case
 6. Cortex result
-7. Final incident timeline
-
-
----
+7. Final case timeline
 
 ## Video Demonstration
 
-Add the project YouTube video or playlist link here.
-
----
-
-## Author
-
-**Stewart Nyamutswa**  
-Cybersecurity | SOC Operations | Cloud Security | Incident Response
+Add the project demonstration link here.

@@ -1,25 +1,21 @@
 # Hybrid Identity Risk Analyzer with Agentic AI
 
 > **Professional Banner**  
-> **Discover Identities → Correlate Risk → Investigate → Recommend Remediation**
-
----
+> **One view of identity risk across Active Directory and AWS IAM**
 
 ## Project Summary
 
-This project analyzes identity risk across Microsoft Active Directory and AWS IAM. Python-based agents collect human and cloud identity data, identify risky configurations, assign severity scores, and generate AI-assisted investigation and remediation reports.
+I built a hybrid identity-security platform that analyzes both Microsoft Active Directory and AWS IAM.
 
-The results are presented through a Streamlit dashboard that allows an analyst to run a full scan, review identity metrics, inspect high-risk accounts, and understand why each identity was flagged.
+The application collects human and cloud identity data, looks for risky configurations, calculates a risk score, and uses AI to explain why a finding matters and what should be done next. The results are presented in a Streamlit dashboard where an analyst can run a scan and review high-risk identities.
 
----
+The AI does not decide whether an identity is risky. That decision comes from deterministic rules. AI is used after the analysis to turn the technical findings into a clear investigation and remediation report.
 
 ## Why I Built This
 
-Organizations frequently manage Active Directory and AWS IAM as separate environments even though both can expose the business to identity-based attacks.
+Identity attacks often cross more than one environment. A company may have privileged users in Active Directory, long-lived IAM users in AWS, service accounts with weak settings, and no single place to review the combined risk.
 
-I built this project to create one risk-analysis workflow for privileged users, stale accounts, weak password settings, long-lived cloud identities, and excessive permissions. The goal was not simply to list accounts, but to explain which identities deserved attention and why.
-
----
+I wanted to build something that treated identity as one security problem rather than separating on-premises and cloud accounts into unrelated reports.
 
 ## Technologies Used
 
@@ -33,9 +29,7 @@ I built this project to create one risk-analysis workflow for privileged users, 
 - Tailscale
 - JSON
 - Risk-scoring logic
-- Least-privilege principles
-
----
+- Least-privilege access
 
 ## Architecture
 
@@ -50,7 +44,7 @@ Human Identity Agent
 AWS IAM              │
       │ boto3        │
       ▼              │
-Non-Human Identity Agent
+Cloud Identity Agent │
       │              │
       └──────┬───────┘
              ▼
@@ -65,101 +59,92 @@ Non-Human Identity Agent
      Streamlit Dashboard
 ```
 
-The Active Directory lab ran locally, while the agents and dashboard ran on AWS EC2. Tailscale provided private connectivity between the two environments.
-
----
-
 ## Engineering Journey
 
 ### Step 1 — Design
 
-I separated the platform into specialized agents so that identity collection, normalization, risk scoring, investigation, and remediation guidance could be developed and tested independently.
+I separated the platform into focused components. One agent collected Active Directory data, another collected AWS IAM data, and later stages handled normalization, scoring, investigation, and remediation guidance.
 
-The risk score was deterministic, while AI was used to explain findings rather than invent them.
+This made the system easier to test and helped prevent AI from becoming responsible for the actual risk decision.
 
 ### Step 2 — Build
 
-I created an Active Directory lab with users, groups, privileged accounts, and risky password settings. A read-only account collected identity data through LDAP.
+I created a Windows Server Active Directory lab with users, groups, privileged accounts, and intentionally risky settings.
 
-The AWS agent used boto3 to enumerate IAM users, roles, policies, access keys, and administrative permissions. The results were normalized into a common structure.
+A read-only account collected users and group membership through LDAP. The AWS component used boto3 to enumerate IAM users, roles, policies, access keys, and administrative permissions.
+
+I then normalized both data sources into a common format.
 
 ### Step 3 — Secure
 
-The Active Directory reader was restricted to read-only access. AWS permissions were limited to the actions required for inventory and assessment.
+The Active Directory account used by the application had read-only access. AWS permissions were limited to identity inventory and assessment.
 
-Secrets were stored outside the public repository, and Tailscale provided a private connection instead of exposing LDAP directly to the internet.
+Tailscale provided private connectivity between the AWS-hosted application and my local domain controller, which avoided exposing LDAP directly to the internet.
 
 ### Step 4 — Test
 
-I created test conditions that included Domain Admin membership, Password Never Expires, disabled accounts, long-lived IAM users, administrative policies, and weak service-account configurations.
+I created test conditions such as:
 
-I ran each agent independently before testing the full pipeline.
+- Membership in privileged Active Directory groups
+- Password Never Expires
+- Disabled accounts
+- Long-lived IAM users
+- AdministratorAccess policies
+- Weak service-account configurations
+
+I tested each component separately before running the complete scan.
 
 ### Step 5 — Validate
 
-I verified that every finding included the identity, score, severity, reasons, and remediation guidance. I also confirmed that the AI reports stayed grounded in the deterministic risk findings.
+I checked that every finding included the identity, score, severity, reasons, and recommended action.
 
-The final results were displayed in Streamlit with identity metrics, severity distributions, and detailed investigation reports.
-
----
+I also reviewed the AI reports to confirm they were based on the actual risk data rather than making unsupported assumptions.
 
 ## Challenges & Troubleshooting
 
-### Hybrid LDAP Connectivity
+### Connecting AWS to the local domain controller
 
-The AWS-hosted application initially could not reach the local domain controller. I validated Tailscale routing, firewall rules, LDAP ports, and service-account permissions until the connection succeeded.
+The application initially could not reach Active Directory. I worked through Tailscale routing, Windows firewall rules, LDAP ports, and service-account permissions until the connection succeeded.
 
-### Different Identity Models
+### Active Directory and AWS use different identity models
 
-Active Directory and AWS IAM use different attributes and privilege models. I created a normalized structure without pretending both systems were identical.
+A domain user and an IAM role are not the same thing. I had to normalize the useful security attributes without pretending the environments were identical.
 
-### AI Hallucination Risk
+### Making the AI output specific
 
-Unstructured prompts produced recommendations that were too general. I improved the prompts by supplying the exact identity attributes, risk reasons, score, and known limitations.
-
----
+Early reports were too generic. I improved them by passing the exact identity attributes, risk reasons, severity, and known limitations into the prompt.
 
 ## Results
 
-- Active Directory users and groups were collected through LDAP.
-- AWS IAM users, roles, policies, and access keys were inventoried.
-- Privileged and weakly configured identities were identified.
-- Every finding received a score, severity, reasons, and recommendation.
-- AI-generated investigation and remediation reports were produced.
-- Results were presented through a centralized Streamlit dashboard.
-
----
+- Collected Active Directory users and group membership through LDAP
+- Inventoried AWS IAM users, roles, policies, and access keys
+- Identified privileged and weakly configured identities
+- Assigned a consistent score and severity to each finding
+- Generated AI-assisted investigation and remediation reports
+- Presented the findings through a Streamlit dashboard
 
 ## Lessons Learned
 
-Identity risk depends on context. A privileged account with a non-expiring password is more dangerous than a disabled user, and a long-lived IAM user with administrative access requires urgent attention.
+Identity risk only makes sense when it is viewed in context.
 
-The project also showed that AI is most useful after reliable data collection and deterministic analysis are already in place.
+A disabled account is not equal to an active administrator with a non-expiring password. Likewise, a long-lived IAM user with full administrative access deserves much more attention than a tightly scoped role.
 
----
+I also learned that AI is most useful after reliable data collection and rule-based analysis are already in place.
 
 ## Project Gallery
 
-Use the strongest images from the project asset folder in this order:
+All screenshots and diagrams are stored in the [`assets`](./assets/) folder.
+
+Suggested viewing order:
 
 1. Architecture diagram
-2. Active Directory lab
+2. Active Directory environment
 3. AWS IAM identities
 4. Agent execution
 5. Risk findings
 6. AI investigation report
 7. Streamlit dashboard
 
-
----
-
 ## Video Demonstration
 
-Add the project YouTube video or playlist link here.
-
----
-
-## Author
-
-**Stewart Nyamutswa**  
-Cybersecurity | SOC Operations | Cloud Security | Incident Response
+Add the project demonstration link here.

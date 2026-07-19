@@ -1,27 +1,27 @@
 # AI-Powered SOC Investigation Engine
 
 > **Professional Banner**  
-> **Detect → Enrich → Investigate → Score → Create Incident**
-
----
+> **Turn a Splunk alert into an analyst-ready incident**
 
 ## Project Summary
 
-The AI-Powered SOC Investigation Engine automates the repetitive first stage of SOC triage. It retrieves triggered detections from Splunk, enriches them with identity, asset, geolocation, reputation, and threat-intelligence context, generates an AI-assisted investigation report, calculates risk, and creates a ServiceNow incident for analyst review.
+This project automates the repetitive first stage of a SOC investigation.
 
-The project was validated with multiple attack scenarios, including SSH brute force and Active Directory privilege escalation.
+The engine retrieves detections from Splunk, gathers identity and asset context, checks available geolocation and threat-intelligence sources, generates an AI-assisted investigation report, calculates a risk score, and creates a ServiceNow incident for analyst review.
 
----
+I validated the workflow with several scenarios, including SSH brute-force activity and Active Directory privilege escalation.
 
 ## Why I Built This
 
-SOC analysts often begin an investigation by opening several tools to answer the same questions: Who is the user? What asset is affected? Is the source IP suspicious? What technique does the event represent? How urgent is it?
+A SOC analyst often opens several tools before they can answer basic questions about an alert:
 
-That repetitive work delays response and can produce inconsistent case notes.
+- Who is the user?
+- What system is affected?
+- Is the source address known to be malicious?
+- What attack technique does the event resemble?
+- How urgent is the case?
 
-I built this engine to assemble the available context automatically while keeping the analyst responsible for validating the evidence and deciding how to respond.
-
----
+That work is necessary, but much of it is repetitive. I built this engine to assemble the available evidence automatically so the analyst can spend more time evaluating the event and deciding how to respond.
 
 ## Technologies Used
 
@@ -43,124 +43,110 @@ I built this engine to assemble the available context automatically while keepin
 - MITRE ATT&CK
 - CIS Controls
 
----
-
 ## Architecture
 
 ```text
-Ubuntu / Windows / Active Directory
-             │
-             │ Security Logs
-             ▼
-      Splunk Enterprise
-             │
-             │ REST API
-             ▼
-AI SOC Investigation Engine
-   ├── Active Directory Enrichment
-   ├── CMDB Asset Context
-   ├── GeoIP
-   ├── VirusTotal
-   └── AbuseIPDB
-             │
-             ▼
-AI Investigation + Risk Scoring
-             │
-             ▼
-ServiceNow Incident
-             │
-             ▼
-SOC Analyst Review and Response
+Ubuntu, Windows, and Active Directory
+                 │
+                 │ Security logs
+                 ▼
+          Splunk Enterprise
+                 │
+                 │ REST API
+                 ▼
+     AI SOC Investigation Engine
+       ├── Active Directory context
+       ├── CMDB asset context
+       ├── GeoIP
+       ├── VirusTotal
+       └── AbuseIPDB
+                 │
+                 ▼
+       Investigation and risk score
+                 │
+                 ▼
+          ServiceNow incident
+                 │
+                 ▼
+        SOC analyst review and response
 ```
-
-The same investigation pipeline handled both Linux authentication events and Windows identity-security events.
-
----
 
 ## Engineering Journey
 
 ### Step 1 — Design
 
-I designed the platform as a staged investigation workflow. Splunk remained responsible for detection, enrichment services supplied context, the AI layer explained the evidence, and ServiceNow provided structured incident tracking.
+I designed the platform so each tool had one clear responsibility.
 
-The analyst remained the final decision-maker.
+Splunk handled detection. The enrichment stage collected context. The AI stage explained the evidence. ServiceNow tracked the incident. The analyst remained responsible for the final decision.
 
 ### Step 2 — Build
 
-I configured Splunk Universal Forwarders on Ubuntu and Windows systems, created detection searches, and built a Python service that retrieved triggered alerts through the Splunk REST API.
+I configured Splunk Universal Forwarders on Ubuntu and Windows systems and created searches for the attack scenarios.
 
-The engine normalized different alert types into a common structure and passed the results through enrichment, investigation, scoring, and ticket-creation stages.
+I then built a Python service that called the Splunk REST API, normalized different event types, enriched the alert, generated the report, calculated risk, and created a ServiceNow incident.
 
 ### Step 3 — Secure
 
-API keys and service credentials were stored outside the public repository. Access to Splunk and ServiceNow was limited to the required accounts and endpoints.
+API keys and service credentials were kept outside the public repository. The Splunk and ServiceNow accounts were limited to the actions required by the workflow.
 
-The platform treated unavailable enrichment data honestly instead of assuming that missing reputation results meant an indicator was safe.
+The engine also treated missing intelligence honestly. No result from a reputation service was recorded as unavailable information, not proof that an indicator was safe.
 
 ### Step 4 — Test
 
 I tested the workflow with:
 
-- SSH brute-force activity from Kali Linux against Ubuntu
-- Active Directory privileged-group membership changes
+- SSH brute-force attempts from Kali Linux
+- Active Directory privileged-group changes
 - Suspicious PowerShell activity
 - Linux authentication failures
 - Windows security events
 
-I first confirmed the raw events, then verified the Splunk detections and downstream investigation pipeline.
+For each test, I first confirmed the raw event, then the Splunk detection, and finally the complete investigation workflow.
 
 ### Step 5 — Validate
 
-I confirmed that the engine retrieved the correct alert, enriched the event, generated a grounded investigation report, mapped relevant MITRE ATT&CK techniques and CIS Controls, calculated a risk score, and created a ServiceNow incident.
-
-The project was documented through three videos: architecture, SSH attack, and Active Directory privilege escalation.
-
----
+I confirmed that the engine retrieved the correct alert, gathered the available context, generated a report grounded in the evidence, mapped relevant MITRE ATT&CK techniques and CIS Controls, assigned a risk score, and opened a ServiceNow incident.
 
 ## Challenges & Troubleshooting
 
-### Reliable Splunk Searches
+### Building useful Splunk detections
 
-The detection searches needed to identify malicious patterns without depending on one exact event. I tested the searches against generated telemetry and adjusted fields, thresholds, and time windows.
+A search that matches one test event is easy to create. A useful detection needs the right fields, threshold, and time window. I adjusted the searches after reviewing the raw telemetry.
 
-### Normalizing Different Alert Types
+### Normalizing Linux and Windows events
 
-Linux SSH events and Windows Active Directory events contain different fields. I created a normalized alert structure so the downstream workflow could process both.
+SSH alerts and Active Directory events do not share the same fields. I created one normalized event format so that the downstream investigation stages could handle both.
 
-### Threat-Intelligence Limitations
+### Limited threat-intelligence results
 
-Private lab IP addresses often have no public reputation data. The platform represented this as “no public intelligence available” rather than treating it as proof that the address was safe.
+Private lab addresses usually have no public reputation history. The engine had to explain that limitation instead of overstating the available evidence.
 
-### Grounding the AI Report
+### Keeping AI grounded
 
-The AI output had to remain connected to the actual event. I structured the input so the model received the detection, enrichment results, and known limitations before generating conclusions.
-
----
+The AI report was only useful when it received the actual event, enrichment results, and known gaps. Structured input reduced generic or unsupported conclusions.
 
 ## Results
 
-- Splunk detections triggered for multiple attack scenarios.
-- Alerts were retrieved automatically through the REST API.
-- Identity, asset, GeoIP, and threat-intelligence context was assembled.
-- AI-generated reports included technical and business explanations.
-- MITRE ATT&CK and CIS Controls were mapped to the event.
-- Risk scores were calculated consistently.
-- ServiceNow incidents were created for analyst review.
-- Repetitive first-stage triage was reduced.
-
----
+- Triggered Splunk detections for multiple attack scenarios
+- Retrieved alerts automatically through the REST API
+- Collected identity, asset, GeoIP, and threat-intelligence context
+- Generated technical and business-focused investigation summaries
+- Mapped relevant MITRE ATT&CK techniques and CIS Controls
+- Assigned consistent risk scores
+- Created ServiceNow incidents for analyst review
+- Reduced repetitive first-stage triage work
 
 ## Lessons Learned
 
-AI can improve SOC speed and consistency, but it does not replace evidence collection or analyst judgment.
+AI can make investigations faster, but it cannot replace reliable telemetry or analyst judgment.
 
-The quality of the final investigation depended on the quality of the detection, field normalization, and enrichment stages. The analyst remained responsible for validating the conclusion and deciding how to respond.
-
----
+The final report was only as good as the detection, event fields, and enrichment data that came before it. The analyst still needed to validate the conclusion and choose the response.
 
 ## Project Gallery
 
-Use the strongest images from the project asset folder in this order:
+All screenshots and diagrams are stored in the [`assets`](./assets/) folder.
+
+Suggested viewing order:
 
 1. Architecture diagram
 2. Splunk detection
@@ -171,16 +157,6 @@ Use the strongest images from the project asset folder in this order:
 7. ServiceNow incident
 8. Final workflow evidence
 
-
----
-
 ## Video Demonstration
 
-Add the project YouTube video or playlist link here.
-
----
-
-## Author
-
-**Stewart Nyamutswa**  
-Cybersecurity | SOC Operations | Cloud Security | Incident Response
+Add the project demonstration link here.

@@ -1,25 +1,21 @@
 # Secure Cloud-Native E-Commerce Platform on AWS
 
 > **Professional Banner**  
-> **Highly Available Architecture · Layered Security · Infrastructure as Code**
-
----
+> **A highly available web application built with layered AWS security**
 
 ## Project Summary
 
-Stewart Secure Shop is a production-style e-commerce application deployed on AWS. It uses a multi-tier VPC, two EC2 application servers, an Application Load Balancer, Amazon RDS PostgreSQL, Amazon S3, CloudFront, AWS WAF, and AWS-native monitoring services.
+Stewart Secure Shop is a production-style e-commerce application deployed on AWS.
 
-The infrastructure was deployed with CloudFormation so the environment could be created consistently and managed as code.
+The platform uses Route 53, CloudFront, AWS WAF, an Application Load Balancer, two EC2 application servers, Amazon RDS PostgreSQL, and Amazon S3. CloudWatch, CloudTrail, GuardDuty, Security Hub, and AWS Config provide monitoring and security visibility.
 
----
+I deployed the infrastructure with CloudFormation so that the environment was repeatable instead of being built manually each time.
 
 ## Why I Built This
 
-Many beginner AWS projects stop after deploying a website to a single public EC2 instance. That approach does not demonstrate high availability, private data storage, layered security, monitoring, or repeatable deployment.
+Many beginner AWS projects place a website on one public EC2 instance and stop there.
 
-I built this project to understand how multiple AWS services work together to deliver and protect a complete application.
-
----
+I wanted to build something that forced me to think about private networking, high availability, database security, content delivery, web protection, monitoring, and infrastructure as code as one connected system.
 
 ## Technologies Used
 
@@ -42,8 +38,6 @@ I built this project to understand how multiple AWS services work together to de
 - Nginx
 - GitHub Actions
 
----
-
 ## Architecture
 
 ```text
@@ -63,101 +57,95 @@ Application Load Balancer
   │
   ▼
 Auto Scaling Group
-  ├── EC2 Application Server 1
-  └── EC2 Application Server 2
+  ├── EC2 application server 1
+  └── EC2 application server 2
               │
               ▼
      Amazon RDS PostgreSQL
 
-Amazon S3 ───► Product Images
+Amazon S3 ───► Product images
 
-Monitoring and Security:
+Monitoring:
 CloudWatch | CloudTrail | GuardDuty | Security Hub | AWS Config
 ```
-
-Public traffic reaches the application through Route 53, CloudFront, WAF, and the load balancer. The application and database remain in private subnets.
-
----
 
 ## Engineering Journey
 
 ### Step 1 — Design
 
-I designed a multi-tier VPC with public subnets, private application subnets, and private database subnets.
+I designed a multi-tier VPC with public subnets, private application subnets, and private database subnets across multiple Availability Zones.
 
-The design separated internet-facing components from the application and data layers while supporting high availability across multiple Availability Zones.
+Only the load balancer was directly reachable from the public traffic path. The application servers and database remained private.
 
 ### Step 2 — Build
 
-I deployed the infrastructure through multiple CloudFormation stacks. The application used Flask behind Gunicorn and Nginx on two Ubuntu EC2 instances.
+I divided the infrastructure into multiple CloudFormation stacks so that networking, compute, database, and supporting services could be deployed and troubleshot separately.
 
-Amazon RDS PostgreSQL stored customer and product data, while Amazon S3 stored product images and static assets.
+The application ran on Ubuntu using Flask, Gunicorn, and Nginx. PostgreSQL stored application data, while S3 stored product images.
 
 ### Step 3 — Secure
 
-I placed the application servers and database in private subnets, restricted security-group access, enabled SSL for the database connection, and placed AWS WAF in front of the application.
+I restricted security groups by service and placed AWS WAF in front of the application.
 
-GuardDuty, Security Hub, CloudTrail, CloudWatch, and AWS Config provided security and operational visibility.
+The database used SSL connections and remained inside private subnets. GuardDuty, Security Hub, CloudTrail, CloudWatch, and AWS Config provided several layers of visibility.
 
 ### Step 4 — Test
 
-I tested load-balancer health checks, availability across two EC2 instances, database connectivity, S3 image delivery, CloudFront behavior, WAF managed rules, rate limiting, and controlled security testing against infrastructure I owned.
+I tested the application through the complete traffic path rather than only connecting directly to an EC2 instance.
+
+Testing included load-balancer health checks, database connectivity, S3 image delivery, CloudFront behavior, WAF managed rules, rate limiting, and controlled security tests against my own infrastructure.
 
 ### Step 5 — Validate
 
-I confirmed that both targets were healthy, the application was available through the custom domain, product data loaded from RDS, images loaded from S3, and security events appeared in AWS monitoring services.
-
----
+I confirmed that both EC2 targets were healthy, the custom domain worked, the database returned product data, images loaded correctly, and AWS security services recorded relevant activity.
 
 ## Challenges & Troubleshooting
 
-### Unhealthy Load Balancer Targets
+### The load balancer marked both servers unhealthy
 
-The load balancer initially marked both EC2 instances as unhealthy. I traced the request path and corrected the Gunicorn listening configuration and health-check behavior.
+I traced the request from the load balancer to Nginx and Gunicorn. The issue was in the application listening and health-check path rather than the load balancer itself.
 
-### S3 AccessDenied Errors
+### S3 returned AccessDenied
 
-Product images failed to load because the bucket and distribution permissions did not allow the intended access path. I updated the policy and validated the CloudFront configuration.
+The image path worked only after I corrected the bucket and CloudFront permissions.
 
-### Database Connectivity
+### The application could not connect to PostgreSQL
 
-The Flask application initially could not reach PostgreSQL. I checked the RDS endpoint, security groups, credentials, and SSL requirements until the connection succeeded.
+I checked the endpoint, credentials, security groups, network path, and SSL requirement one layer at a time until the connection succeeded.
 
-### CloudFront and Routing Problems
+### CloudFront made troubleshooting less obvious
 
-CloudFront origin behavior and routing caused timeout and content-delivery issues. Troubleshooting each layer separately helped isolate the failure.
+A failure at the origin could appear to be a CloudFront problem. I learned to test each layer independently before testing the entire path.
 
-### WAF Rule Tuning
+### WAF required tuning
 
-Some controlled test requests were initially allowed. I reviewed the managed-rule configuration, priorities, and rate-limit settings until the intended behavior was achieved.
-
----
+Some controlled requests were initially allowed. I reviewed managed-rule configuration, rule priorities, and rate-limit values until the behavior matched the design.
 
 ## Results
 
-- A custom-domain e-commerce application was deployed successfully.
-- Traffic was distributed across two healthy EC2 instances.
-- Application servers and RDS remained in private subnets.
-- Product data was stored in PostgreSQL.
-- Product images were delivered from S3.
-- CloudFront acted as the public content-delivery layer.
-- AWS WAF inspected incoming traffic.
-- AWS monitoring services provided centralized visibility.
-- CloudFormation made the environment repeatable.
-
----
+- Deployed a custom-domain e-commerce application
+- Distributed traffic across two healthy EC2 servers
+- Kept application servers and RDS in private subnets
+- Stored product data in PostgreSQL
+- Delivered product images from S3
+- Used CloudFront as the public delivery layer
+- Protected the application with AWS WAF
+- Enabled AWS-native security and operational monitoring
+- Made the infrastructure repeatable with CloudFormation
 
 ## Lessons Learned
 
-Cloud security is not delivered by one service. It depends on the way networking, compute, identity, storage, application security, and monitoring work together.
+Cloud security comes from the architecture as a whole.
 
-Building the platform taught me AWS services. Troubleshooting it taught me cloud engineering.
+A private subnet is useful only when routing, security groups, load balancing, identity, monitoring, and application configuration all support the same design.
 
----
+Building the environment taught me AWS services. Troubleshooting the full request path taught me cloud engineering.
 
 ## Project Gallery
 
-Use the strongest images from the project asset folder in this order:
+All screenshots and diagrams are stored in the [`assets`](./assets/) folder.
+
+Suggested viewing order:
 
 1. Architecture diagram
 2. CloudFormation stacks
@@ -166,18 +154,8 @@ Use the strongest images from the project asset folder in this order:
 5. Running application
 6. RDS and S3 integration
 7. WAF testing
-8. GuardDuty, Security Hub, or CloudWatch evidence
-
-
----
+8. Monitoring and security findings
 
 ## Video Demonstration
 
-Add the project YouTube video or playlist link here.
-
----
-
-## Author
-
-**Stewart Nyamutswa**  
-Cybersecurity | SOC Operations | Cloud Security | Incident Response
+Add the project demonstration link here.
