@@ -79,11 +79,29 @@ I designed the platform so each tool had one clear responsibility.
 
 Splunk handled detection. The enrichment stage collected context. The AI stage explained the evidence. ServiceNow tracked the incident. The analyst remained responsible for the final decision.
 
+
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
 ### Step 2 — Build
 
 I configured Splunk Universal Forwarders on Ubuntu and Windows systems and created searches for the attack scenarios.
 
 I then built a Python service that called the Splunk REST API, normalized different event types, enriched the alert, generated the report, calculated risk, and created a ServiceNow incident.
+
+
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Detection Rules.</em></p>
 
 ### Step 3 — Secure
 
@@ -102,6 +120,43 @@ I tested the workflow with:
 - Windows security events
 
 For each test, I first confirmed the raw event, then the Splunk detection, and finally the complete investigation workflow.
+
+- SSH brute-force attempts from Kali Linux
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
+- Linux authentication failures
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
+
+- Active Directory privileged-group changes
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
+- Windows security events
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
 
 ### Step 5 — Validate
 
