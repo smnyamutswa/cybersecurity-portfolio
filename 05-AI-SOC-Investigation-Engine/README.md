@@ -1,6 +1,5 @@
 # AI-Powered SOC Investigation Engine
 
-> **Professional Banner**  
 > **Turn a Splunk alert into an analyst-ready incident**
 
 ## Project Summary
@@ -161,6 +160,25 @@ For each test, I first confirmed the raw event, then the Splunk detection, and f
 ### Step 5 — Validate
 
 I confirmed that the engine retrieved the correct alert, gathered the available context, generated a report grounded in the evidence, mapped relevant MITRE ATT&CK techniques and CIS Controls, assigned a risk score, and opened a ServiceNow incident.
+
+- Enriched ticket for an ssh bruteforce alert
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
+- Enriched ticket for a Windows Active Directory priviledge escalation alert
+<p align="center">
+  <a href="./assets/image-00.png">
+    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  </a>
+</p>
+
+<p align="center"><em>Click any image to open the full-size version.</em></p>
+
 
 ## Challenges & Troubleshooting
 
