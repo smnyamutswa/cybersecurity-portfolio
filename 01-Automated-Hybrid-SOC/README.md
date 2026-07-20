@@ -1,22 +1,22 @@
 # Automated Hybrid SOC Incident Detection and Response Platform
- 
+
 > **From raw security event to structured investigation and response**
 
 ## Project Summary
 
-I built this project to understand what really happens after a security alert is generated.
+I built this project to understand the complete lifecycle of a security investigation.
 
-The lab connects Wazuh, Shuffle, TheHive, and Cortex into one working SOC pipeline. Wazuh detects activity on Windows and Linux systems, Shuffle moves and transforms the alert, TheHive turns it into an investigation case, and Cortex adds context to supported observables.
+The platform connects Wazuh, Shuffle, TheHive, and Cortex into one working SOC pipeline. Wazuh detects activity on Windows and Linux systems, Shuffle receives and transforms the alerts, TheHive organizes them into structured investigations, and Cortex adds context to supported observables.
 
-The goal was not simply to make tools talk to each other. I wanted to recreate the way a real analyst receives an alert, validates it, gathers evidence, documents the investigation, and decides what happens next.
-
-
+The goal was to build a complete workflow that could detect suspicious activity, automate alert handling, support investigation, and preserve analyst review before response decisions were made.
 
 ## Why I Built This
 
-Security alerts alone provide limited value without context. The real challenge is transforming raw detections into actionable investigations.
+I wanted to understand what happens after a security event is detected.
 
-I built this project to automate the journey from alert generation to analyst-ready cases, combining detection, enrichment, case management, and investigation workflows to reflect how modern SOC teams operate.
+My goal was to learn how alerts are collected, processed, enriched, documented, and managed from the moment suspicious activity occurs until an analyst has enough information to investigate and respond.
+
+Building the full workflow helped me understand how SIEM, SOAR, case management, and enrichment platforms work together as one connected security operations process.
 
 ## Technologies Used
 
@@ -25,11 +25,13 @@ I built this project to automate the journey from alert generation to analyst-re
 - TheHive
 - Cortex
 - AWS EC2
+- Docker
 - Ubuntu Linux
 - Windows
 - Kali Linux
 - VirtualBox
-- REST APIs and webhooks
+- REST APIs
+- Webhooks
 - JSON
 - MITRE ATT&CK
 
@@ -67,110 +69,131 @@ SOC analyst investigation and response
 
 ### Step 1 — Design
 
-I broke the workflow into separate SOC functions: detection, automation, case management, enrichment, and analyst response.
+I started by planning how each part of the platform would support the investigation process.
 
-The local VirtualBox machines generated the activity, while the central security platforms ran in AWS. This gave me a hybrid environment that was closer to how many real organizations operate.
+Wazuh would detect suspicious activity, Shuffle would automate the movement and transformation of alerts, TheHive would organize the investigation, and Cortex would enrich supported observables.
+
+I used local VirtualBox machines to generate activity while the central security platforms ran in AWS. This created a hybrid environment and allowed me to test how events moved between local systems and cloud-hosted security services.
 
 <p align="center">
   <a href="./assets/image-02.png">
-    <img src="./assets/image-02.png" alt="Image 02" width="480">
+    <img src="./assets/image-02.png" alt="SOC platform architecture" width="480">
   </a>
 </p>
-<p align="center"><em>architecture</em></p>
 
+<p align="center"><em>Architecture of the hybrid SOC investigation platform.</em></p>
 
 ### Step 2 — Build
 
-I installed Wazuh agents on the monitored systems and connected them to the Wazuh manager.
+I installed Wazuh agents on the Windows and Ubuntu systems and connected them to the Wazuh manager so that security events could be collected centrally.
 
 <p align="center">
   <a href="./assets/image-12.png">
-    <img src="./assets/image-12.png" alt="Image 02" width="480">
+    <img src="./assets/image-12.png" alt="Wazuh connected endpoints dashboard" width="480">
   </a>
 </p>
-<p align="center"><em>Dash of connected workstations.</em></p>
 
-I then created a Shuffle workflow that received Wazuh alerts and mapped the important fields into the format expected by TheHive.
+<p align="center"><em>Windows and Ubuntu endpoints connected to Wazuh.</em></p>
+
+I then created a Shuffle workflow that received Wazuh alerts, extracted the important fields, and converted them into the format required by TheHive.
 
 <p align="center">
   <a href="./assets/image-08.png">
-    <img src="./assets/image-08.png" alt="Image 08" width="480">
+    <img src="./assets/image-08.png" alt="Shuffle SOAR workflow" width="480">
   </a>
 </p>
-<p align="center"><em>Shuffle workflow.</em></p>
 
-After that, I connected Cortex so that hashes, public IP addresses, and other supported observables could be analyzed from inside the investigation workflow.
+<p align="center"><em>Shuffle workflow used to process Wazuh alerts.</em></p>
+
+After that, I connected Cortex so that supported observables such as hashes, public IP addresses, and domains could be analyzed during the investigation.
+
 <p align="center">
   <a href="./assets/image-13.png">
-    <img src="./assets/image-13.png" alt="Image 02" width="480">
+    <img src="./assets/image-13.png" alt="Cortex analyzers" width="480">
   </a>
 </p>
-<p align="center"><em>CORTEX ANALYZERS.</em></p>
+
+<p align="center"><em>Cortex analyzers available for observable enrichment.</em></p>
 
 ### Step 3 — Secure
 
-I kept API keys and credentials out of the public repository and restricted network access to the ports required by each service.
+I kept API keys and service credentials outside the public repository and limited network access to the ports required by each platform.
 
-All attack activity was performed only against systems inside my own lab. I also kept a human-review step before an alert became a formal case.
+All attack activity was performed only against systems inside my own lab environment.
+
+I also kept a human-review step before selected alerts were promoted into formal investigation cases.
+
 <p align="center">
   <a href="./assets/image-14.png">
-    <img src="./assets/image-14.png" alt="Image 02" width="480">
+    <img src="./assets/image-14.png" alt="VirtualBox lab environment" width="480">
   </a>
 </p>
-<p align="center"><em>Virtual environment</em></p>
+
+<p align="center"><em>VirtualBox environment used to generate controlled security events.</em></p>
 
 ### Step 4 — Test
 
-I generated several controlled events, including failed SSH logins, successful SSH access and privilege-related events.
+I generated several controlled events, including failed SSH login attempts, successful SSH access, and privilege-related activity.
 
-For each scenario, I checked the event at every stage instead of assuming the complete pipeline worked.
+For each scenario, I checked the event at every stage of the workflow instead of assuming the entire pipeline was working.
+
 <p align="center">
   <a href="./assets/image-06.png">
-    <img src="./assets/image-06.png" alt="Image 02" width="480">
+    <img src="./assets/image-06.png" alt="Failed SSH login events" width="480">
   </a>
 </p>
-<p align="center"><em>Failed SSH logins</em></p>
+
+<p align="center"><em>Failed SSH login activity detected in the lab.</em></p>
+
 <p align="center">
   <a href="./assets/image-07.png">
-    <img src="./assets/image-07.png" alt="Image 02" width="480">
+    <img src="./assets/image-07.png" alt="Privilege-related security event" width="480">
   </a>
 </p>
-<p align="center"><em>privilege-related events</em></p>
+
+<p align="center"><em>Privilege-related activity generated for testing.</em></p>
 
 ### Step 5 — Validate
 
-I confirmed that Wazuh detected the event, Shuffle received the payload, TheHive created a readable alert, and Cortex returned results for supported observables.
+I confirmed that Wazuh detected the event, Shuffle received and processed the payload, TheHive created a readable alert, and Cortex returned results for supported observables.
 
 <p align="center">
   <a href="./assets/image-15.png">
-    <img src="./assets/image-15.png" alt="Image 02" width="480">
+    <img src="./assets/image-15.png" alt="TheHive alert creation" width="480">
   </a>
 </p>
-<p align="center"><em>Alert Creation</em></p>
 
-I then promoted selected alerts into cases and documented the investigation steps.
+<p align="center"><em>Alert successfully created in TheHive.</em></p>
+
+I then promoted selected alerts into cases and documented the investigation steps and enrichment results.
 
 <p align="center">
   <a href="./assets/image-10.png">
-    <img src="./assets/image-10.png" alt="Image 02" width="480">
+    <img src="./assets/image-10.png" alt="TheHive alert investigation with Cortex results" width="480">
   </a>
 </p>
-<p align="center"><em>Alert Analysis after runningcortex analyzers</em></p>
 
+<p align="center"><em>Alert investigation after running Cortex analyzers.</em></p>
 
 ## Challenges & Troubleshooting
 
-### TheHive rejected the alert payload
+### TheHive Rejected the Alert Payload
 
-My first Shuffle requests returned an `Invalid JSON` error. The problem was not the alert itself; it was the structure of the request body. I corrected the required fields, data types, and unique `sourceRef` value.
+My first Shuffle requests returned an `Invalid JSON` error.
 
-### The services depended on each other
+The issue was the structure of the request body rather than the alert itself. I reviewed the required fields, corrected the data types, and created a unique `sourceRef` value before TheHive accepted the alert.
 
-TheHive and Cortex relied on supporting database and search services. Storage pressure, container health, hostname resolution, and startup order all caused failures at different points.
+### Managing Service Dependencies
 
-### Private IP addresses produced little enrichment
+TheHive and Cortex depended on supporting database and search services.
 
-Public reputation tools cannot provide useful intelligence about private lab addresses. I learned that an empty result does not automatically mean an analyzer is broken.
+I had to troubleshoot storage pressure, unhealthy containers, hostname resolution, service startup order, and communication between the different components before the platform worked reliably.
+
+### Limited Enrichment for Private IP Addresses
+
+Most of the systems in my lab used private IP addresses.
+
+Public reputation services could not provide meaningful intelligence for those addresses, so an empty Cortex result did not necessarily mean an analyzer had failed. It often meant that no public reputation data existed for the observable.
 
 ## Results
 
@@ -180,14 +203,20 @@ Public reputation tools cannot provide useful intelligence about private lab add
 - Analyzed supported observables with Cortex
 - Documented investigation timelines and response actions
 - Reduced manual copying between security platforms
+- Validated the complete workflow using controlled attack scenarios
 
 ## Lessons Learned
 
-The biggest lesson was that a SOC is a process, not a dashboard.
+This project helped me understand that detection is only one part of a security investigation.
 
-Detection tells the analyst that something happened. The real value comes from validating the alert, adding context, documenting the evidence, and making a defensible response decision.
+The investigation becomes useful when the alert is validated, additional context is collected, the evidence is documented, and the analyst can make a clear response decision.
+
+I also gained hands-on experience troubleshooting APIs, webhooks, JSON payloads, containerized services, and communication between multiple security platforms.
 
 ## Project Gallery
+
+Additional screenshots and supporting images are available in the [`assets`](./assets/) folder.
+
 ## Video Demonstration
 
 Add the project demonstration link here.
