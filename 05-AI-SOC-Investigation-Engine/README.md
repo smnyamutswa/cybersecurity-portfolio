@@ -1,26 +1,22 @@
 # AI-Powered SOC Investigation Engine
 
-> **Turn a Splunk alert into an analyst-ready incident**
+> **Turn a Splunk alert into an analyst-ready security incident**
 
 ## Project Summary
 
-This project automates the repetitive first stage of a SOC investigation.
+Security analysts often need to check several tools before they can understand what an alert really means.
 
-The engine retrieves detections from Splunk, gathers identity and asset context, checks available geolocation and threat-intelligence sources, generates an AI-assisted investigation report, calculates a risk score, and creates a ServiceNow incident for analyst review.
+I built this project to automate that first stage of the investigation. The engine retrieves alerts from Splunk, gathers identity, asset, geolocation, and threat-intelligence context, generates an AI-assisted investigation report, assigns a risk score, and creates a ServiceNow incident for analyst review.
 
-I validated the workflow with several scenarios, including SSH brute-force activity and Active Directory privilege escalation.
+The goal was not to replace the analyst. It was to reduce repetitive investigation work and present the available evidence in one place so the analyst could make a faster and better-informed decision.
 
 ## Why I Built This
 
-A SOC analyst often opens several tools before they can answer basic questions about an alert:
+When a SOC analyst receives an alert, the first question is usually not how to fix it. The first question is what actually happened.
 
-- Who is the user?
-- What system is affected?
-- Is the source address known to be malicious?
-- What attack technique does the event resemble?
-- How urgent is the case?
+Answering that often requires checking the affected user, reviewing the asset, looking up the source IP address, searching threat-intelligence services, and identifying the attack technique.
 
-That work is necessary, but much of it is repetitive. I built this engine to assemble the available evidence automatically so the analyst can spend more time evaluating the event and deciding how to respond.
+I built this platform to collect that information automatically and turn a raw Splunk alert into a structured investigation that an analyst could review and act on.
 
 ## Technologies Used
 
@@ -74,152 +70,164 @@ Ubuntu, Windows, and Active Directory
 
 ### Step 1 — Design
 
-I designed the platform so each tool had one clear responsibility.
+I designed the workflow so that every tool had one clear responsibility.
 
-Splunk handled detection. The enrichment stage collected context. The AI stage explained the evidence. ServiceNow tracked the incident. The analyst remained responsible for the final decision.
+Splunk handled detection. The investigation engine collected additional context. AI summarized the evidence and explained the risk. ServiceNow tracked the incident, while the analyst remained responsible for the final decision.
 
+This made the workflow easier to understand, test, and troubleshoot.
 
 <p align="center">
   <a href="./assets/image-01.png">
-    <img src="./assets/image-01.png" alt="Image 01" width="480">
+    <img src="./assets/image-01.png" alt="AI SOC Investigation Engine architecture" width="480">
   </a>
 </p>
 
-<p align="center"><em>Architecture.</em></p>
+<p align="center"><em>Architecture of the AI-powered investigation workflow.</em></p>
 
 ### Step 2 — Build
 
-I configured Splunk Universal Forwarders on Ubuntu and Windows systems and created searches for the attack scenarios.
+I configured Splunk Universal Forwarders on Ubuntu and Windows systems so that security events could be collected and analyzed in Splunk.
 
-I then built a Python service that called the Splunk REST API, normalized different event types, enriched the alert, generated the report, calculated risk, and created a ServiceNow incident.
-
+I then built a Python service that retrieved alerts through the Splunk REST API, converted different event types into a common format, gathered additional context, generated an AI-assisted investigation report, calculated a risk score, and created a ServiceNow incident.
 
 <p align="center">
   <a href="./assets/image-08.png">
-    <img src="./assets/image-08.png" alt="Image 01" width="480">
+    <img src="./assets/image-08.png" alt="Splunk detection rules" width="480">
   </a>
 </p>
 
-<p align="center"><em>Detection Rules.</em></p>
+<p align="center"><em>Splunk detection rules used to identify suspicious activity.</em></p>
 
 ### Step 3 — Secure
 
-API keys and service credentials were kept outside the public repository. The Splunk and ServiceNow accounts were limited to the actions required by the workflow.
+I used dedicated service accounts with only the permissions needed to retrieve alerts and create incidents.
 
-The engine also treated missing intelligence honestly. No result from a reputation service was recorded as unavailable information, not proof that an indicator was safe.
+The engine also handled missing information carefully. When a threat-intelligence source returned no result, the report marked that information as unavailable instead of assuming the indicator was safe.
 
 ### Step 4 — Test
 
-I tested the workflow with:
+I tested the platform with several attack scenarios to confirm that alerts were detected, enriched, analyzed, and converted into ServiceNow incidents.
 
-- SSH brute-force attempts from Kali Linux
-- Active Directory privileged-group changes
-- Suspicious PowerShell activity
-- Linux authentication failures
-- Windows security events
+For each scenario, I first confirmed the original activity, then checked the Splunk detection, and finally reviewed the complete investigation workflow.
 
-For each test, I first confirmed the raw event, then the Splunk detection, and finally the complete investigation workflow.
+#### SSH Brute-Force Attack
 
-- SSH brute-force attempts from Kali Linux
+I generated repeated SSH login attempts from Kali Linux and confirmed that the activity was detected in Splunk.
+
 <p align="center">
   <a href="./assets/image-05.png">
-    <img src="./assets/image-05.png" alt="Image 01" width="480">
+    <img src="./assets/image-05.png" alt="SSH brute-force activity" width="480">
   </a>
 </p>
 
-<p align="center"><em>SSH brute-force.</em></p>
+<p align="center"><em>Controlled SSH brute-force activity generated from Kali Linux.</em></p>
 
-- Linux authentication failures in Splunk
+#### Linux Authentication Failures
+
+I reviewed the failed authentication events in Splunk and confirmed that the detection logic grouped the activity correctly.
+
 <p align="center">
   <a href="./assets/image-06.png">
-    <img src="./assets/image-06.png" alt="Image 01" width="480">
+    <img src="./assets/image-06.png" alt="Linux authentication failures in Splunk" width="480">
   </a>
 </p>
 
-<p align="center"><em>Linux authentication failures.</em></p>
+<p align="center"><em>Linux authentication failures detected in Splunk.</em></p>
 
+#### Active Directory Privilege Escalation
 
-- Active Directory privilege Escalation attack
+I generated an Active Directory privilege-escalation scenario by adding a user to a privileged group and confirmed that the Windows security event was detected.
+
 <p align="center">
   <a href="./assets/image-02.png">
-    <img src="./assets/image-02.png" alt="Image 01" width="480">
+    <img src="./assets/image-02.png" alt="Active Directory privilege escalation" width="480">
   </a>
 </p>
 
-<p align="center"><em>Active Directory privilege Escalation.</em></p>
+<p align="center"><em>Active Directory privilege-escalation activity.</em></p>
 
-- Windows security events in Splunk
+#### Windows Security Events
+
+I verified that Windows security events were forwarded successfully and could be searched and investigated in Splunk.
+
 <p align="center">
   <a href="./assets/image-03.png">
-    <img src="./assets/image-03.png" alt="Image 01" width="480">
+    <img src="./assets/image-03.png" alt="Windows security events in Splunk" width="480">
   </a>
 </p>
 
-<p align="center"><em>Windows security events.</em></p>
+<p align="center"><em>Windows security events collected in Splunk.</em></p>
 
 ### Step 5 — Validate
 
-I confirmed that the engine retrieved the correct alert, gathered the available context, generated a report grounded in the evidence, mapped relevant MITRE ATT&CK techniques and CIS Controls, assigned a risk score, and opened a ServiceNow incident.
+After testing the attack scenarios, I confirmed that the complete workflow operated as expected.
 
-- ServiceNow Enriched ticket for an ssh bruteforce alert
+The engine retrieved the correct Splunk alert, collected the available identity, asset, geolocation, and threat-intelligence context, generated an investigation report, assigned a risk score, mapped the activity to relevant MITRE ATT&CK techniques and CIS Controls, and created a ServiceNow incident for analyst review.
+
+#### Enriched SSH Brute-Force Incident
+
 <p align="center">
   <a href="./assets/image-07.png">
-    <img src="./assets/image-07.png" alt="Image 01" width="480">
+    <img src="./assets/image-07.png" alt="ServiceNow SSH brute-force incident" width="480">
   </a>
 </p>
 
-<p align="center"><em>ServiceNow Enriched ticket.</em></p>
+<p align="center"><em>ServiceNow incident enriched with investigation details for the SSH brute-force alert.</em></p>
 
-- Enriched ticket for a Windows Active Directory priviledge escalation alert
+#### Enriched Active Directory Incident
+
 <p align="center">
   <a href="./assets/image-04.png">
-    <img src="./assets/image-04.png" alt="Image 01" width="480">
+    <img src="./assets/image-04.png" alt="ServiceNow Active Directory privilege escalation incident" width="480">
   </a>
 </p>
 
-<p align="center"><em>ServiceNow Enriched ticket.</em></p>
-
+<p align="center"><em>ServiceNow incident created for the Active Directory privilege-escalation alert.</em></p>
 
 ## Challenges & Troubleshooting
 
-### Building useful Splunk detections
+### Creating Reliable Splunk Detections
 
-A search that matches one test event is easy to create. A useful detection needs the right fields, threshold, and time window. I adjusted the searches after reviewing the raw telemetry.
+Creating a search that matches one test event was straightforward. Creating a useful detection required choosing the right fields, threshold, and time window.
 
-### Normalizing Linux and Windows events
+I improved the searches by reviewing the raw events and adjusting the detection logic until the results were consistent.
 
-SSH alerts and Active Directory events do not share the same fields. I created one normalized event format so that the downstream investigation stages could handle both.
+### Handling Different Log Formats
 
-### Limited threat-intelligence results
+Linux SSH events and Windows Active Directory events use different field names and structures.
 
-Private lab addresses usually have no public reputation history. The engine had to explain that limitation instead of overstating the available evidence.
+I converted the important information from each event into one common format so the enrichment and investigation stages could process both types of alerts.
 
-### Keeping AI grounded
+### Limited Threat-Intelligence Results
 
-The AI report was only useful when it received the actual event, enrichment results, and known gaps. Structured input reduced generic or unsupported conclusions.
+Most systems in my lab used private IP addresses, so public threat-intelligence services often returned little or no information.
+
+Instead of treating a missing result as proof that an address was safe, the platform clearly stated that public reputation information was unavailable.
+
+### Generating Useful AI Reports
+
+The quality of the AI investigation report depended on the quality of the information provided to it.
+
+I improved the reports by sending structured evidence from Splunk, Active Directory, asset records, and threat-intelligence sources instead of sending only the original alert.
 
 ## Results
 
-- Triggered Splunk detections for multiple attack scenarios
-- Retrieved alerts automatically through the REST API
-- Collected identity, asset, GeoIP, and threat-intelligence context
-- Generated technical and business-focused investigation summaries
-- Mapped relevant MITRE ATT&CK techniques and CIS Controls
-- Assigned consistent risk scores
-- Created ServiceNow incidents for analyst review
-- Reduced repetitive first-stage triage work
+- Built an automated investigation workflow from Splunk to ServiceNow
+- Detected multiple Windows and Linux attack scenarios
+- Retrieved alerts automatically through the Splunk REST API
+- Collected identity, asset, geolocation, and threat-intelligence context
+- Generated AI-assisted investigation reports
+- Assigned risk scores based on the available evidence
+- Mapped alerts to MITRE ATT&CK techniques and CIS Controls
+- Created analyst-ready ServiceNow incidents
+- Reduced repetitive first-stage investigation work
 
 ## Lessons Learned
 
-AI can make investigations faster, but it cannot replace reliable telemetry or analyst judgment.
+This project showed me that detecting suspicious activity is only the beginning of a SOC investigation.
 
-The final report was only as good as the detection, event fields, and enrichment data that came before it. The analyst still needed to validate the conclusion and choose the response.
+The real challenge is gathering enough context to understand what happened, who or what was affected, and whether the alert represents a genuine security incident.
 
-## Project Gallery
+I also learned that AI is most useful when it is supported by reliable detections and structured evidence. The analyst still needs to review the findings, validate the conclusion, and decide how to respond.
 
-Screenshots and architecture diagrams will be added to the [`assets`](./assets/) folder.
-
-<p align="center"><em>Images will be displayed here as medium-size, clickable previews.</em></p>
 ## Video Demonstration
-
-Add the project demonstration link here.
