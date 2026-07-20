@@ -1,6 +1,5 @@
 # Secure Cloud-Native E-Commerce Platform on AWS
 
-> **Professional Banner**  
 > **A highly available web application built with layered AWS security**
 
 ## Project Summary
@@ -13,9 +12,7 @@ I deployed the infrastructure with CloudFormation so that the environment was re
 
 ## Why I Built This
 
-Many beginner AWS projects place a website on one public EC2 instance and stop there.
-
-I wanted to build something that forced me to think about private networking, high availability, database security, content delivery, web protection, monitoring, and infrastructure as code as one connected system.
+My goal was to design and deploy a secure, highly available web application using AWS best practices. I wanted to gain practical experience with infrastructure as code, private networking, load balancing, managed databases, web application security, and cloud monitoring while understanding how these services work together in a real deployment
 
 ## Technologies Used
 
@@ -77,27 +74,101 @@ I designed a multi-tier VPC with public subnets, private application subnets, an
 
 Only the load balancer was directly reachable from the public traffic path. The application servers and database remained private.
 
+<p align="center">
+  <a href="./assets/image-13.png">
+    <img src="./assets/image-13.png" alt="Image 01" width="380">
+  </a>
+</p>
+
+<p align="center"><em>Architecture.</em></p>
+
 ### Step 2 — Build
 
 I divided the infrastructure into multiple CloudFormation stacks so that networking, compute, database, and supporting services could be deployed and troubleshot separately.
 
-The application ran on Ubuntu using Flask, Gunicorn, and Nginx. PostgreSQL stored application data, while S3 stored product images.
+<p align="center">
+  <a href="./assets/image-02.png">
+    <img src="./assets/image-02.png" alt="Image 01" width="380">
+  </a>
+</p>
+
+<p align="center"><em>CloudFormation.</em></p>
+
+The application ran on Ubuntu using Flask, Gunicorn, and Nginx. PostgreSQL stored application data, while S3 stored product images and relevant logs.
 
 ### Step 3 — Secure
 
-I restricted security groups by service and placed AWS WAF in front of the application.
+I secured the application by allowing only the required network traffic between AWS services. The web servers and database were placed in private subnets so they couldn't be accessed directly from the internet.
 
-The database used SSL connections and remained inside private subnets. GuardDuty, Security Hub, CloudTrail, CloudWatch, and AWS Config provided several layers of visibility.
+<p align="center">
+  <a href="./assets/image-12.png">
+    <img src="./assets/image-12.png" alt="Image 01" width="380">
+  </a>
+</p>
+<p align="center"><em>AWS Environment.</em></p>
+
+I also protected the application with AWS WAF and enabled CloudTrail, CloudWatch, GuardDuty, Security Hub, and AWS Config to monitor activity, detect potential threats, and help identify security issues.
+
+<p align="center">
+  <a href="./assets/image-06.png">
+    <img src="./assets/image-06.png" alt="Image 01" width="380">
+  </a>
+</p>
+<p align="center"><em>AWF WAF.</em></p>
 
 ### Step 4 — Test
 
-I tested the application through the complete traffic path rather than only connecting directly to an EC2 instance.
+I tested the application the same way a real user would access it. Instead of connecting directly to the web server, I visited the website through the custom domain and confirmed that requests passed through CloudFront, AWS WAF, the Application Load Balancer, and finally reached the EC2 application servers. 
 
-Testing included load-balancer health checks, database connectivity, S3 image delivery, CloudFront behavior, WAF managed rules, rate limiting, and controlled security tests against my own infrastructure.
+I also verified that the application could communicate with Amazon RDS and retrieve images stored in Amazon S3.
+
+<p align="center">
+  <a href="./assets/image-01.png">
+    <img src="./assets/image-01.png" alt="Image 01" width="380">
+  </a>
+</p>
+
+<p align="center"><em>Web Page.</em></p>
+
+I confirmed that both EC2 targets were healthy, the custom domain worked, the database returned product data, images loaded correctly, and AWS security services recorded relevant activity.
+
+<p align="center">
+  <a href="./assets/image-04.png">
+    <img src="./assets/image-04.png" alt="Image 01" width="380">
+  </a>
+</p>
+
+<p align="center"><em>Load Balancer.</em></p>
 
 ### Step 5 — Validate
 
-I confirmed that both EC2 targets were healthy, the custom domain worked, the database returned product data, images loaded correctly, and AWS security services recorded relevant activity.
+After deploying the environment, I validated that the infrastructure was functioning securely by performing controlled security assessments against my own application. I used Nmap to verify that only the intended ports and services were exposed and Gobuster to identify any unintentionally accessible directories or files.
+
+<p align="center">
+  <a href="./assets/image-14.png">
+    <img src="./assets/image-14.png" alt="Image 01" width="380">
+  </a>
+</p>
+
+<p align="center"><em>NMAP Scan.</em></p>
+
+<p align="center">
+  <a href="./assets/image-15.png">
+    <img src="./assets/image-15.png" alt="Image 01" width="380">
+  </a>
+</p>
+
+<p align="center"><em>Gobuster Scan.</em></p>
+
+I also reviewed the results in CloudTrail, CloudWatch, GuardDuty, and Security Hub to confirm that the generated activity was logged and monitored correctly. This helped verify both the security controls and the monitoring capabilities of the environment.
+
+<p align="center">
+  <a href="./assets/image-11.png">
+    <img src="./assets/image-11.png" alt="Image 01" width="380">
+  </a>
+</p>
+
+<p align="center"><em>WAF Results after scan.</em></p>
 
 ## Challenges & Troubleshooting
 
@@ -135,69 +206,7 @@ Some controlled requests were initially allowed. I reviewed managed-rule configu
 
 ## Lessons Learned
 
-Cloud security comes from the architecture as a whole.
-
-A private subnet is useful only when routing, security groups, load balancing, identity, monitoring, and application configuration all support the same design.
+This project showed me that securing a cloud application involves much more than deploying it successfully. Every component—from networking and compute to storage, monitoring, and security services—must be configured correctly for the environment to be secure.
 
 Building the environment taught me AWS services. Troubleshooting the full request path taught me cloud engineering.
 
-## Project Gallery
-
-<p align="center">
-  <a href="./assets/image-01.png">
-    <img src="./assets/image-01.png" alt="Image 01" width="380">
-  </a>
-
-  <a href="./assets/image-02.png">
-    <img src="./assets/image-02.png" alt="Image 02" width="380">
-  </a>
-
-  <a href="./assets/image-03.png">
-    <img src="./assets/image-03.png" alt="Image 03" width="380">
-  </a>
-
-  <a href="./assets/image-04.png">
-    <img src="./assets/image-04.png" alt="Image 04" width="380">
-  </a>
-
-  <a href="./assets/image-05.png">
-    <img src="./assets/image-05.png" alt="Image 05" width="380">
-  </a>
-
-  <a href="./assets/image-06.png">
-    <img src="./assets/image-06.png" alt="Image 06" width="380">
-  </a>
-
-  <a href="./assets/image-07.png">
-    <img src="./assets/image-07.png" alt="Image 07" width="380">
-  </a>
-
-  <a href="./assets/image-08.png">
-    <img src="./assets/image-08.png" alt="Image 08" width="380">
-  </a>
-
-  <a href="./assets/image-09.png">
-    <img src="./assets/image-09.png" alt="Image 09" width="380">
-  </a>
-
-  <a href="./assets/image-10.png">
-    <img src="./assets/image-10.png" alt="Image 10" width="380">
-  </a>
-
-  <a href="./assets/image-11.png">
-    <img src="./assets/image-11.png" alt="Image 11" width="380">
-  </a>
-
-  <a href="./assets/image-12.png">
-    <img src="./assets/image-12.png" alt="Image 12" width="380">
-  </a>
-
-  <a href="./assets/image-13.png">
-    <img src="./assets/image-13.png" alt="Image 13" width="380">
-  </a>
-</p>
-
-<p align="center"><em>Click any image to open the full-size version.</em></p>
-## Video Demonstration
-
-Add the project demonstration link here.
