@@ -80,12 +80,12 @@ Splunk handled detection. The enrichment stage collected context. The AI stage e
 
 
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-01.png">
+    <img src="./assets/image-01.png" alt="Image 01" width="480">
   </a>
 </p>
 
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>Architecture.</em></p>
 
 ### Step 2 — Build
 
@@ -95,8 +95,8 @@ I then built a Python service that called the Splunk REST API, normalized differ
 
 
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-08.png">
+    <img src="./assets/image-08.png" alt="Image 01" width="480">
   </a>
 </p>
 
@@ -122,62 +122,62 @@ For each test, I first confirmed the raw event, then the Splunk detection, and f
 
 - SSH brute-force attempts from Kali Linux
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-05.png">
+    <img src="./assets/image-05.png" alt="Image 01" width="480">
   </a>
 </p>
 
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>SSH brute-force.</em></p>
 
-- Linux authentication failures
+- Linux authentication failures in Splunk
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-06.png">
+    <img src="./assets/image-06.png" alt="Image 01" width="480">
   </a>
 </p>
 
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>Linux authentication failures.</em></p>
 
 
-- Active Directory privileged-group changes
+- Active Directory privilege Escalation attack
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-02.png">
+    <img src="./assets/image-02.png" alt="Image 01" width="480">
   </a>
 </p>
 
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>Active Directory privilege Escalation.</em></p>
 
-- Windows security events
+- Windows security events in Splunk
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-03.png">
+    <img src="./assets/image-03.png" alt="Image 01" width="480">
   </a>
 </p>
 
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>Windows security events.</em></p>
 
 ### Step 5 — Validate
 
 I confirmed that the engine retrieved the correct alert, gathered the available context, generated a report grounded in the evidence, mapped relevant MITRE ATT&CK techniques and CIS Controls, assigned a risk score, and opened a ServiceNow incident.
 
-- Enriched ticket for an ssh bruteforce alert
+- ServiceNow Enriched ticket for an ssh bruteforce alert
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-07.png">
+    <img src="./assets/image-07.png" alt="Image 01" width="480">
   </a>
 </p>
 
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>ServiceNow Enriched ticket.</em></p>
 
 - Enriched ticket for a Windows Active Directory priviledge escalation alert
 <p align="center">
-  <a href="./assets/image-00.png">
-    <img src="./assets/image-00.png" alt="Image 01" width="480">
+  <a href="./assets/image-04.png">
+    <img src="./assets/image-04.png" alt="Image 01" width="480">
   </a>
 </p>
 
-<p align="center"><em>Click any image to open the full-size version.</em></p>
+<p align="center"><em>ServiceNow Enriched ticket.</em></p>
 
 
 ## Challenges & Troubleshooting
